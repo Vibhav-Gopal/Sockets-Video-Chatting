@@ -21,8 +21,21 @@ server_socket.listen(5)
 print('Socket now listening')
 
 clients=dict()
+frames = {}
+
+def sendFrames():
+    
+    while True:
+        broadcastData = b""
+        numClients = struct.pack("Q",len(frames))
+        for key,val in frames.items:
+            broadcastData+=struct.pack("Q",len(val))+val
+        for client in clients:
+            client.sendall(numClients+broadcastData)
+        cv2.waitKey(100)
 
 def handle_client(client_socket):
+    
     data = b""
     while True:
         try: 
@@ -37,9 +50,8 @@ def handle_client(client_socket):
             while len(data) < msgSize:
                 data+= client_socket.recv(24*1024)
             frameData = data[:msgSize]
+            frames[client_socket] = frameData
             data = data[msgSize:]
-            frame = pickle.loads(frameData)
-            cv2.imshow("Received",frame)
             key = cv2.waitKey(1)
             if key == ord('q') : raise socket.error
         except socket.error:
