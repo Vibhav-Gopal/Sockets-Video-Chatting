@@ -23,19 +23,18 @@ print('Socket now listening')
 clients=dict()
 frames = {}
 
-def sendFrames():
-    
+def sendFrames(frames):
+    print("Sender")
     while True:
         broadcastData = b""
         numClients = struct.pack("Q",len(frames))
-        for key,val in frames.items:
+        for key,val in frames.items():
             broadcastData+=struct.pack("Q",len(val))+val
         for client in clients:
             client.sendall(numClients+broadcastData)
         cv2.waitKey(100)
 
 def handle_client(client_socket):
-    
     data = b""
     while True:
         try: 
@@ -57,7 +56,8 @@ def handle_client(client_socket):
         except socket.error:
             clients.pop(client_socket)
             break
-
+senderThread = threading.Thread(target=sendFrames,args=(frames,))
+senderThread.start()
 while True:
     client_socket,addr = server_socket.accept()
     print("Connection from",addr)

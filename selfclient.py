@@ -5,6 +5,8 @@ import struct
 import threading
 
 def renderHandler(frames):
+    for frame in frames:
+        cv2.imshow("Received",pickle.loads(frame))
     #TODO
     ...
 
@@ -22,7 +24,7 @@ def listenServer(clientSocket):
                 data+=packet
             numFrames = data[:payload_size]
             data = data[payload_size:]
-            for i in range(numFrames):
+            for i in range(struct.unpack("Q",numFrames)[0]):
                 while len(data)<payload_size:
                     packet = clientSocket.recv(1)
                     if not packet : break
@@ -38,7 +40,7 @@ def listenServer(clientSocket):
 
             renderHandler(frames)
             #TODO Render Frames here
-            
+
             key = cv2.waitKey(1)
             if key == ord('q') : raise socket.error
         except socket.error:
@@ -67,7 +69,7 @@ while True:
         client_socket.sendall(message)
         print(f"Frame size = {len(message)}\t",end='\r')
         # cv2.imshow("ClientVideo",frm)
-        cv2.waitKey(50)
+        cv2.waitKey(100)
     except:
         print("Connection lost")
         break
