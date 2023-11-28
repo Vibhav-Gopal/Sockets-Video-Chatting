@@ -4,6 +4,12 @@ import pickle
 import struct
 import threading
 
+def renderHandler(frames):
+    #TODO
+    ...
+
+
+
 def listenServer(clientSocket):
     data = b""
     while True:
@@ -29,7 +35,10 @@ def listenServer(clientSocket):
                 frame = data[:frameSize]
                 data = data[frameSize:]
                 frames.append(frame)
+
+            renderHandler(frames)
             #TODO Render Frames here
+            
             key = cv2.waitKey(1)
             if key == ord('q') : raise socket.error
         except socket.error:
